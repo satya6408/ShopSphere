@@ -34,14 +34,27 @@ pipeline {
                 }
             }
         }
+	
+		
+stage('Trivy Filesystem Scan') {
+    steps {
+        sh '''
+            trivy fs \
+              --scanners vuln,secret,misconfig \
+              --severity HIGH,CRITICAL \
+              --exit-code 0 \
+              .
+        '''
+    }
+}
+
 
        stage('SonarQube Analysis') {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner'
 
-                    withSonarQubeEnv('ShopSphere-SonarQube') {
-                        sh "${scannerHome}/bin/sonar-scanner"
+                    withSonarQubeEnv('ShopSphere-SonarQube') {                        sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
             }
