@@ -1,6 +1,13 @@
+
 FROM python:3.12-slim
 
 WORKDIR /app
+
+# Update OS packages to receive available security fixes
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
@@ -16,3 +23,4 @@ EXPOSE 8001
 USER appuser
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+

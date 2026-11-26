@@ -5,3 +5,4 @@ venv/
 *.key
 __pycache__/
 *.pyc
+trivy-product-report.json

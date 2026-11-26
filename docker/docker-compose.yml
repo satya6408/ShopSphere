@@ -1,11 +1,8 @@
-
 services:
 
   # Product Microservice
   product-service:
-    build:
-      context: ../services/product-service
-    image: shopsphere-product:v1
+    image: ${DOCKERHUB_USERNAME:-satya6408}/shopsphere-product:${IMAGE_TAG:-latest}
     container_name: shopsphere-product
     expose:
       - "8001"
@@ -19,11 +16,9 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-    # Cart Microservice
+  # Cart Microservice
   cart-service:
-    build:
-      context: ../services/cart-service
-    image: shopsphere-cart:v1
+    image: ${DOCKERHUB_USERNAME:-satya6408}/shopsphere-cart:${IMAGE_TAG:-latest}
     container_name: shopsphere-cart
     expose:
       - "8002"
@@ -37,15 +32,12 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # Nginx Frontend and Reverse Proxy
+  # Frontend and Nginx Reverse Proxy
   frontend:
-    image: nginx:latest
+    image: ${DOCKERHUB_USERNAME:-satya6408}/shopsphere-frontend:${IMAGE_TAG:-latest}
     container_name: shopsphere-frontend
     ports:
       - "80:80"
-    volumes:
-      - ../frontend:/usr/share/nginx/html:ro
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - product-service
       - cart-service
@@ -53,7 +45,7 @@ services:
 
   # MySQL Database
   db:
-    image: mysql:8.4
+    image: ${DOCKERHUB_USERNAME:-satya6408}/shopsphere-database:${IMAGE_TAG:-latest}
     container_name: shopsphere-mysql
     restart: unless-stopped
     environment:
@@ -63,7 +55,6 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-      - ../database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
       interval: 10s
@@ -71,7 +62,5 @@ services:
       retries: 10
       start_period: 30s
 
-# Persistent database storage
 volumes:
   mysql_data:
-

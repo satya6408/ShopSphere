@@ -1,0 +1,100 @@
+---
+- name: Deploy ShopSphere Application
+  hosts: local
+  connection: local
+  become: false
+
+  vars:
+    project_dir: "{{ playbook_dir }}/.."
+    compose_file: "{{ project_dir }}/docker/docker-compose.yml"
+
+  tasks:
+
+    - name: Check Docker installation
+      command: docker --version
+      changed_when: false
+
+    - name: Check Docker Compose installation
+      command: docker compose version
+      changed_when: false
+
+    - name: Validate Docker Compose configuration
+      command:
+        argv:
+          - docker
+          - compose
+          - -p
+          - docker
+          - --env-file
+          - .env
+          - -f
+          - docker/docker-compose.yml
+          - config
+          - --quiet
+      args:
+        chdir: "{{ project_dir }}"
+      environment:
+        IMAGE_TAG: "{{ image_tag }}"
+        DOCKERHUB_USERNAME: "{{ dockerhub_username }}"
+      changed_when: false
+
+    - name: Pull all application images from Docker Hub
+      command:
+        argv:
+          - docker
+          - compose
+          - -p
+          - docker
+          - --env-file
+          - .env
+          - -f
+          - docker/docker-compose.yml
+          - pull
+      args:
+        chdir: "{{ project_dir }}"
+      environment:
+        IMAGE_TAG: "{{ image_tag }}"
+        DOCKERHUB_USERNAME: "{{ dockerhub_username }}"
+
+    - name: Deploy ShopSphere containers
+      command:
+        argv:
+          - docker
+          - compose
+          - -p
+          - docker
+          - --env-file
+          - .env
+          - -f
+          - docker/docker-compose.yml
+          - up
+          - -d
+      args:
+        chdir: "{{ project_dir }}"
+      environment:
+        IMAGE_TAG: "{{ image_tag }}"
+        DOCKERHUB_USERNAME: "{{ dockerhub_username }}"
+
+    - name: Verify running containers
+      command:
+        argv:
+          - docker
+          - compose
+          - -p
+          - docker
+          - --env-file
+          - .env
+          - -f
+          - docker/docker-compose.yml
+          - ps
+      args:
+        chdir: "{{ project_dir }}"
+      environment:
+        IMAGE_TAG: "{{ image_tag }}"
+        DOCKERHUB_USERNAME: "{{ dockerhub_username }}"
+      register: container_status
+      changed_when: false
+
+    - name: Display container status
+      debug:
+        var: container_status.stdout_lines
