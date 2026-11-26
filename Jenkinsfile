@@ -90,6 +90,48 @@ pipeline {
                 '''
             }
         }
+	
+        stage('Docker Hub Push') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerHubCred',
+                        usernameVariable: 'DOCKERHUB_USERNAME',
+                        passwordVariable: 'DOCKERHUB_TOKEN'
+                    )
+                ]) {
+                    sh '''
+                        set +x
+
+                        echo "$DOCKERHUB_TOKEN" | docker login \
+                          -u "$DOCKERHUB_USERNAME" \
+                          --password-stdin
+
+                        docker tag shopsphere-product:${BUILD_NUMBER} \
+                          "$DOCKERHUB_USERNAME/shopsphere-product:${BUILD_NUMBER}"
+
+                        docker tag shopsphere-product:${BUILD_NUMBER} \
+                          "$DOCKERHUB_USERNAME/shopsphere-product:latest"
+
+                        docker tag shopsphere-cart:${BUILD_NUMBER} \
+                          "$DOCKERHUB_USERNAME/shopsphere-cart:${BUILD_NUMBER}"
+
+                        docker tag shopsphere-cart:${BUILD_NUMBER} \
+                          "$DOCKERHUB_USERNAME/shopsphere-cart:latest"
+
+                        docker push "$DOCKERHUB_USERNAME/shopsphere-product:${BUILD_NUMBER}"
+                        docker push "$DOCKERHUB_USERNAME/shopsphere-product:latest"
+
+                        docker push "$DOCKERHUB_USERNAME/shopsphere-cart:${BUILD_NUMBER}"
+                        docker push "$DOCKERHUB_USERNAME/shopsphere-cart:latest"
+
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+
     }
 
     post {
