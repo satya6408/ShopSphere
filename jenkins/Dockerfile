@@ -22,7 +22,7 @@ RUN apt-get update && \
     $(. /etc/os-release && echo ${VERSION_CODENAME}) stable" \
     > /etc/apt/sources.list.d/docker.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends docker-ce-cli && \
+    apt-get install -y --no-install-recommends docker-ce-cli docker-compose-plugin && \
     wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | \
     gpg --dearmor -o /usr/share/keyrings/trivy.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" \
