@@ -265,3 +265,18 @@ API verification:
 GitHub: https://github.com/satya6408
 
 Project: [ShopSphere – DevSecOps CI/CD Pipeline](https://github.com/satya6408/ShopSphere)
+
+## Project Screenshots
+
+### Jenkins CI/CD Pipeline
+![Jenkins Pipeline](screenshots/jenkins-pipeline.png)
+
+### SonarQube Dashboard
+![SonarQube Dashboard](screenshots/sonarqube-dashboard.png)
+
+### Docker Containers
+![Docker Containers](screenshots/docker-containers.png)
+
+### ShopSphere Frontend
+![ShopSphere Frontend](screenshots/shopsphere-frontend.png)
+
